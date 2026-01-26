@@ -1,0 +1,11 @@
+table posts {
+  id int [pk, increment]
+  title varchar(255) [not null]
+  content text
+  user_id int [ref: > users.id]
+  
+  indexes {
+    (user_id, created_at) [name: 'user_posts_idx']
+    title [type: btree]
+  }
+}

@@ -1,0 +1,12 @@
+enum user_status {
+  active
+  inactive
+  banned
+}
+
+table users {
+  id int [pk]
+  status user_status
+}
+
+Ref: posts.user_id > users.id [delete: cascade]

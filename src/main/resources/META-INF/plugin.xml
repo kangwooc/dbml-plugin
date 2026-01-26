@@ -38,6 +38,21 @@
                 enabledByDefault="true"
                 implementationClass="com.github.kangwooc.dbmlplugin.lang.inspection.DBMLTableStructureInspection"/>
 
+        <psi.referenceContributor
+                language="DBML"
+                implementation="com.github.kangwooc.dbmlplugin.lang.reference.DBMLReferenceContributor"/>
+
+        <renamePsiElementProcessor
+                implementation="com.github.kangwooc.dbmlplugin.lang.refactoring.DBMLRenameProcessor"/>
+
+        <lang.refactoringSupport
+                language="DBML"
+                implementationClass="com.github.kangwooc.dbmlplugin.lang.refactoring.DBMLRefactoringSupportProvider"/>
+
+        <lang.findUsagesProvider
+                language="DBML"
+                implementationClass="com.github.kangwooc.dbmlplugin.lang.findUsages.DBMLFindUsagesProvider"/>
+
         <toolWindow factoryClass="com.github.kangwooc.dbmlplugin.toolWindow.MyToolWindowFactory" id="MyToolWindow"/>
         <postStartupActivity implementation="com.github.kangwooc.dbmlplugin.startup.MyProjectActivity" />
     </extensions>
