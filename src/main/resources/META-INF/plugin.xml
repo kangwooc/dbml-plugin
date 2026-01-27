@@ -9,6 +9,35 @@
     <resource-bundle>messages.MyBundle</resource-bundle>
 
     <extensions defaultExtensionNs="com.intellij">
+        <fileType
+                name="DBML"
+                language="DBML"
+                extensions="dbml"
+                implementationClass="com.github.kangwooc.dbmlplugin.lang.DBMLFileType"/>
+
+        <lang.parserDefinition
+                language="DBML"
+                implementationClass="com.github.kangwooc.dbmlplugin.lang.psi.DBMLParserDefinition"/>
+
+        <lang.syntaxHighlighterFactory
+                language="DBML"
+                implementationClass="com.github.kangwooc.dbmlplugin.lang.highlighting.DBMLSyntaxHighlighterFactory"/>
+
+        <completion.contributor
+                language="DBML"
+                implementationClass="com.github.kangwooc.dbmlplugin.lang.completion.DBMLCompletionContributor"/>
+        <completion.contributor
+                language="TEXT"
+                implementationClass="com.github.kangwooc.dbmlplugin.lang.completion.DBMLCompletionContributor"/>
+
+        <localInspection
+                language="DBML"
+                groupPath="DBML"
+                shortName="DBMLTableStructure"
+                displayName="Validate DBML table sections"
+                enabledByDefault="true"
+                implementationClass="com.github.kangwooc.dbmlplugin.lang.inspection.DBMLTableStructureInspection"/>
+
         <toolWindow factoryClass="com.github.kangwooc.dbmlplugin.toolWindow.MyToolWindowFactory" id="MyToolWindow"/>
         <postStartupActivity implementation="com.github.kangwooc.dbmlplugin.startup.MyProjectActivity" />
     </extensions>
