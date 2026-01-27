@@ -1,12 +1,10 @@
 <!-- Plugin Configuration File. Read more: https://plugins.jetbrains.com/docs/intellij/plugin-configuration-file.html -->
 <idea-plugin>
     <id>com.github.kangwooc.dbmlplugin</id>
-    <name>dbml-plugin</name>
+    <name>DBML Language Support</name>
     <vendor>kangwooc</vendor>
 
     <depends>com.intellij.modules.platform</depends>
-
-    <resource-bundle>messages.MyBundle</resource-bundle>
 
     <extensions defaultExtensionNs="com.intellij">
         <fileType
@@ -64,7 +62,7 @@
         <breadcrumbsInfoProvider
                 implementation="com.github.kangwooc.dbmlplugin.lang.breadcrumbs.DBMLBreadcrumbsProvider"/>
 
-        <toolWindow factoryClass="com.github.kangwooc.dbmlplugin.toolWindow.MyToolWindowFactory" id="MyToolWindow"/>
-        <postStartupActivity implementation="com.github.kangwooc.dbmlplugin.startup.MyProjectActivity" />
+        <defaultLiveTemplatesProvider
+                implementation="com.github.kangwooc.dbmlplugin.lang.DBMLLiveTemplatesProvider"/>
     </extensions>
 </idea-plugin>

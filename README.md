@@ -1,4 +1,4 @@
-# dbml-plugin
+# DBML Language Support
 
 ![Build](https://github.com/kangwooc/dbml-plugin/workflows/Build/badge.svg)
 [![Version](https://img.shields.io/jetbrains/plugin/v/MARKETPLACE_ID.svg)](https://plugins.jetbrains.com/plugin/MARKETPLACE_ID)
@@ -10,10 +10,14 @@ DBML language support for IntelliJ IDEs, focused on fast authoring and safer sch
 - Syntax highlighting with DBML-aware lexer
 - Context-aware completion for tables, indexes, notes, and table groups
 - Table structure inspection for indexes/primary key/note ordering
+- Color gutter icons for DBML color codes (#3498DB, etc.)
+- Navigation: Go to Declaration for table references
+- Structure View with hierarchical tree (Tables > Columns, Enums, Projects, Refs)
+- Breadcrumbs navigation support
 - DBML cheat sheet documentation
 
 <!-- Plugin description -->
-DBML language support for IntelliJ IDEs with syntax highlighting, context-aware completion, and table structure inspections.
+DBML language support for IntelliJ IDEs with syntax highlighting, context-aware completion, table structure inspections, color gutters, navigation, and structure view.
 
 This specific section is a source for the [plugin.xml](/src/main/resources/META-INF/plugin.xml) file which will be extracted by the [Gradle](/build.gradle.kts) during the build process.
 
@@ -24,7 +28,7 @@ To keep everything working, do not remove `<!-- ... -->` sections.
 
 - Using the IDE built-in plugin system:
   
-  <kbd>Settings/Preferences</kbd> > <kbd>Plugins</kbd> > <kbd>Marketplace</kbd> > <kbd>Search for "dbml-plugin"</kbd> >
+  <kbd>Settings/Preferences</kbd> > <kbd>Plugins</kbd> > <kbd>Marketplace</kbd> > <kbd>Search for "DBML"</kbd> >
   <kbd>Install</kbd>
   
 - Using JetBrains Marketplace:

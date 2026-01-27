@@ -30,6 +30,12 @@ class DBMLCompletionContributor : CompletionContributor(), DumbAware {
             return
         }
 
+        // Check for relationship type completion context first
+        if (isAfterRefKeyword(file, parameters.offset)) {
+            addRelationshipTypeCompletions(result)
+            return
+        }
+
         when (detectContext(file, parameters.offset)) {
             CompletionContext.BRACKET_ATTRIBUTE -> addBracketAttributeCompletions(result)
             CompletionContext.TABLE_BODY -> addTableBodyCompletions(result)
@@ -100,6 +106,31 @@ class DBMLCompletionContributor : CompletionContributor(), DumbAware {
             return CompletionContext.TABLE_BODY
         }
         return null
+    }
+
+    private fun addRelationshipTypeCompletions(result: CompletionResultSet) {
+        RELATIONSHIP_TYPE_SUGGESTIONS.forEach { (operator, description) ->
+            result.addElement(
+                LookupElementBuilder.create(operator)
+                    .withTypeText(description, true)
+                    .withCaseSensitivity(false)
+            )
+        }
+    }
+
+    private fun isAfterRefKeyword(file: PsiFile, offset: Int): Boolean {
+        val text = file.viewProvider.document?.charsSequence ?: file.text
+        if (offset < 4) return false
+
+        var i = offset - 1
+        while (i >= 0 && text[i].isWhitespace()) {
+            i--
+        }
+
+        if (i < 3) return false
+
+        val potentialRef = text.subSequence(i - 3, i + 1).toString().lowercase()
+        return potentialRef == "ref:"
     }
 
     private fun addBracketAttributeCompletions(result: CompletionResultSet) {
@@ -391,16 +422,38 @@ class DBMLCompletionContributor : CompletionContributor(), DumbAware {
         private val COLUMN_TYPE_SUGGESTIONS = listOf(
             "int",
             "bigint",
+            "smallint",
+            "tinyint",
             "varchar",
+            "char",
             "text",
+            "mediumtext",
+            "longtext",
             "boolean",
+            "bit",
             "datetime",
             "timestamp",
+            "date",
+            "time",
+            "year",
             "uuid",
             "float",
+            "double",
             "decimal",
+            "numeric",
             "json",
-            "enum"
+            "jsonb",
+            "blob",
+            "binary",
+            "varbinary",
+            "enum",
+            "serial",
+            "bigserial",
+            "smallserial",
+            "cidr",
+            "inet",
+            "macaddr",
+            "array"
         )
 
         private val TABLE_SECTION_KEYWORDS = listOf(
@@ -457,6 +510,13 @@ class DBMLCompletionContributor : CompletionContributor(), DumbAware {
             "note: ",
             "color: ",
             "headercolor: "
+        )
+
+        private val RELATIONSHIP_TYPE_SUGGESTIONS = listOf(
+            ">" to "many-to-one",
+            "<" to "one-to-many",
+            "-" to "one-to-one",
+            "<>" to "many-to-many"
         )
 
         private val BRACED_BLOCK_INSERT_HANDLER = InsertHandler<LookupElement> { context, _ ->

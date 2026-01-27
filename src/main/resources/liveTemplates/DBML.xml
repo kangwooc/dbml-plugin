@@ -1,0 +1,73 @@
+<templateSet group="DBML">
+    <template name="dbtable" value="table $NAME$ {&#10;  id int [pk, increment]&#10;  $FIELD$ $TYPE$ [$ATTRS$]&#10;  created_at timestamp [default: `now()`]&#10;  updated_at timestamp [default: `now()`]&#10;}$END$" description="DBML table with common fields" toReformat="false" toShortenFQNames="false">
+        <variable name="NAME" expression="" defaultValue="&quot;users&quot;" alwaysStopAt="true" />
+        <variable name="FIELD" expression="" defaultValue="&quot;name&quot;" alwaysStopAt="true" />
+        <variable name="TYPE" expression="" defaultValue="&quot;varchar&quot;" alwaysStopAt="true" />
+        <variable name="ATTRS" expression="" defaultValue="&quot;not null&quot;" alwaysStopAt="true" />
+        <context>
+            <option name="OTHER" value="true" />
+        </context>
+    </template>
+
+    <template name="dbenum" value="enum $NAME$ {&#10;  $VALUE1$&#10;  $VALUE2$&#10;  $VALUE3$&#10;}$END$" description="DBML enum declaration" toReformat="false" toShortenFQNames="false">
+        <variable name="NAME" expression="" defaultValue="&quot;status&quot;" alwaysStopAt="true" />
+        <variable name="VALUE1" expression="" defaultValue="&quot;ACTIVE&quot;" alwaysStopAt="true" />
+        <variable name="VALUE2" expression="" defaultValue="&quot;INACTIVE&quot;" alwaysStopAt="true" />
+        <variable name="VALUE3" expression="" defaultValue="&quot;PENDING&quot;" alwaysStopAt="true" />
+        <context>
+            <option name="OTHER" value="true" />
+        </context>
+    </template>
+
+    <template name="dbref" value="Ref: $TABLE1$.$COL1$ $REL$ $TABLE2$.$COL2$$END$" description="DBML relationship (standalone)" toReformat="false" toShortenFQNames="false">
+        <variable name="TABLE1" expression="" defaultValue="&quot;posts&quot;" alwaysStopAt="true" />
+        <variable name="COL1" expression="" defaultValue="&quot;user_id&quot;" alwaysStopAt="true" />
+        <variable name="REL" expression="" defaultValue="&quot;&gt;&quot;" alwaysStopAt="true" />
+        <variable name="TABLE2" expression="" defaultValue="&quot;users&quot;" alwaysStopAt="true" />
+        <variable name="COL2" expression="" defaultValue="&quot;id&quot;" alwaysStopAt="true" />
+        <context>
+            <option name="OTHER" value="true" />
+        </context>
+    </template>
+
+    <template name="dbindex" value="indexes {&#10;  ($COLUMNS$) [name: '$NAME$', $TYPE$]&#10;}$END$" description="DBML index block" toReformat="false" toShortenFQNames="false">
+        <variable name="COLUMNS" expression="" defaultValue="&quot;col1, col2&quot;" alwaysStopAt="true" />
+        <variable name="NAME" expression="" defaultValue="&quot;idx_name&quot;" alwaysStopAt="true" />
+        <variable name="TYPE" expression="" defaultValue="&quot;type: btree&quot;" alwaysStopAt="true" />
+        <context>
+            <option name="OTHER" value="true" />
+        </context>
+    </template>
+
+    <template name="dbpk" value="primary key {&#10;  columns: [$COLUMNS$]&#10;}$END$" description="DBML composite primary key" toReformat="false" toShortenFQNames="false">
+        <variable name="COLUMNS" expression="" defaultValue="&quot;col1, col2&quot;" alwaysStopAt="true" />
+        <context>
+            <option name="OTHER" value="true" />
+        </context>
+    </template>
+
+    <template name="dbcolumn" value="$NAME$ $TYPE$ [$ATTRS$]$END$" description="DBML column with attributes" toReformat="false" toShortenFQNames="false">
+        <variable name="NAME" expression="" defaultValue="&quot;field_name&quot;" alwaysStopAt="true" />
+        <variable name="TYPE" expression="" defaultValue="&quot;varchar&quot;" alwaysStopAt="true" />
+        <variable name="ATTRS" expression="" defaultValue="&quot;not null&quot;" alwaysStopAt="true" />
+        <context>
+            <option name="OTHER" value="true" />
+        </context>
+    </template>
+
+    <template name="dbnote" value="note {&#10;  '$TEXT$'&#10;}$END$" description="DBML note block" toReformat="false" toShortenFQNames="false">
+        <variable name="TEXT" expression="" defaultValue="&quot;Note text&quot;" alwaysStopAt="true" />
+        <context>
+            <option name="OTHER" value="true" />
+        </context>
+    </template>
+
+    <template name="dbtablegroup" value="TableGroup $NAME$ {&#10;  $TABLE1$&#10;  $TABLE2$&#10;}$END$" description="DBML table group" toReformat="false" toShortenFQNames="false">
+        <variable name="NAME" expression="" defaultValue="&quot;group_name&quot;" alwaysStopAt="true" />
+        <variable name="TABLE1" expression="" defaultValue="&quot;users&quot;" alwaysStopAt="true" />
+        <variable name="TABLE2" expression="" defaultValue="&quot;posts&quot;" alwaysStopAt="true" />
+        <context>
+            <option name="OTHER" value="true" />
+        </context>
+    </template>
+</templateSet>
