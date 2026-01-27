@@ -38,6 +38,10 @@
                 enabledByDefault="true"
                 implementationClass="com.github.kangwooc.dbmlplugin.lang.inspection.DBMLTableStructureInspection"/>
 
+        <codeInsight.lineMarkerProvider
+                language="DBML"
+                implementationClass="com.github.kangwooc.dbmlplugin.lang.annotator.DBMLColorAnnotator"/>
+
         <psi.referenceContributor
                 language="DBML"
                 implementation="com.github.kangwooc.dbmlplugin.lang.reference.DBMLReferenceContributor"/>
@@ -52,6 +56,13 @@
         <lang.findUsagesProvider
                 language="DBML"
                 implementationClass="com.github.kangwooc.dbmlplugin.lang.findUsages.DBMLFindUsagesProvider"/>
+
+        <lang.psiStructureViewFactory
+                language="DBML"
+                implementationClass="com.github.kangwooc.dbmlplugin.lang.structure.DBMLStructureViewFactory"/>
+
+        <breadcrumbsInfoProvider
+                implementation="com.github.kangwooc.dbmlplugin.lang.breadcrumbs.DBMLBreadcrumbsProvider"/>
 
         <toolWindow factoryClass="com.github.kangwooc.dbmlplugin.toolWindow.MyToolWindowFactory" id="MyToolWindow"/>
         <postStartupActivity implementation="com.github.kangwooc.dbmlplugin.startup.MyProjectActivity" />

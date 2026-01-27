@@ -2,6 +2,11 @@ package com.github.kangwooc.dbmlplugin.lang.completion
 
 import com.github.kangwooc.dbmlplugin.lang.DBMLKeywords
 import com.github.kangwooc.dbmlplugin.lang.highlighting.DBMLLexer
+import com.github.kangwooc.dbmlplugin.lang.psi.DBMLColumnAttrList
+import com.github.kangwooc.dbmlplugin.lang.psi.DBMLIndexesBlock
+import com.github.kangwooc.dbmlplugin.lang.psi.DBMLNoteBlock
+import com.github.kangwooc.dbmlplugin.lang.psi.DBMLPrimaryKeyBlock
+import com.github.kangwooc.dbmlplugin.lang.psi.DBMLTableBody
 import com.github.kangwooc.dbmlplugin.lang.psi.DBMLTokenTypes
 import com.intellij.codeInsight.completion.CompletionContributor
 import com.intellij.codeInsight.completion.CompletionParameters
@@ -13,6 +18,7 @@ import com.intellij.openapi.project.DumbAware
 import com.intellij.openapi.util.Key
 import com.intellij.psi.PsiFile
 import com.intellij.psi.TokenType
+import com.intellij.psi.util.PsiTreeUtil
 import java.util.ArrayDeque
 
 class DBMLCompletionContributor : CompletionContributor(), DumbAware {
@@ -59,6 +65,9 @@ class DBMLCompletionContributor : CompletionContributor(), DumbAware {
         if (text.isEmpty()) return CompletionContext.GLOBAL
 
         val clampedOffset = offset.coerceIn(0, text.length)
+        val psiContext = detectPsiContext(file, clampedOffset)
+        if (psiContext != null) return psiContext
+
         val currentStamp = file.viewProvider.document?.modificationStamp ?: file.viewProvider.modificationStamp
         val cached = file.getUserData(CONTEXT_CACHE_KEY)
         val cache = if (cached == null || cached.modificationStamp != currentStamp) {
@@ -71,6 +80,26 @@ class DBMLCompletionContributor : CompletionContributor(), DumbAware {
         }
 
         return cache.contextAt(clampedOffset)
+    }
+
+    private fun detectPsiContext(file: PsiFile, offset: Int): CompletionContext? {
+        val element = file.findElementAt(offset) ?: return null
+        if (PsiTreeUtil.getParentOfType(element, DBMLColumnAttrList::class.java) != null) {
+            return CompletionContext.BRACKET_ATTRIBUTE
+        }
+        if (PsiTreeUtil.getParentOfType(element, DBMLIndexesBlock::class.java) != null) {
+            return CompletionContext.INDEXES_BODY
+        }
+        if (PsiTreeUtil.getParentOfType(element, DBMLPrimaryKeyBlock::class.java) != null) {
+            return CompletionContext.PRIMARY_KEY_BODY
+        }
+        if (PsiTreeUtil.getParentOfType(element, DBMLNoteBlock::class.java) != null) {
+            return CompletionContext.NOTE_BODY
+        }
+        if (PsiTreeUtil.getParentOfType(element, DBMLTableBody::class.java) != null) {
+            return CompletionContext.TABLE_BODY
+        }
+        return null
     }
 
     private fun addBracketAttributeCompletions(result: CompletionResultSet) {
