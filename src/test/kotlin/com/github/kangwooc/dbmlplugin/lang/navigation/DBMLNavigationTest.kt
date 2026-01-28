@@ -45,6 +45,16 @@ class DBMLNavigationTest : BasePlatformTestCase() {
 
         val element = myFixture.file.findElementAt(myFixture.caretOffset)
         assertNotNull("Should find element at caret", element)
+        
+        val reference = element?.parent?.reference ?: element?.reference
+        if (reference != null) {
+            val resolved = reference.resolve()
+            if (resolved != null) {
+                val table = PsiTreeUtil.getParentOfType(resolved, DBMLTableDecl::class.java) ?: resolved as? DBMLTableDecl
+                assertNotNull("Should resolve to a table", table)
+                assertEquals("Should resolve to users table", "users", table?.name)
+            }
+        }
     }
 
     fun `test table reference provides completion variants`() {
