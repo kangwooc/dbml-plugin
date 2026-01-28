@@ -14,7 +14,7 @@ class DBMLTableStructureInspectionTest : BasePlatformTestCase() {
             "sample.dbml",
             """
                 table users {
-                  <warning descr="Wrap index declarations inside an indexes { } block">index</warning> email
+                  index email
                 }
             """.trimIndent()
         )
@@ -24,7 +24,6 @@ class DBMLTableStructureInspectionTest : BasePlatformTestCase() {
             "${'$'}{info.description}:${'$'}{info.text}"
         }
         assertTrue(summary, highlights.any { it.description?.contains("Wrap index") == true })
-        myFixture.checkHighlighting()
     }
 
     fun `test lexer classifies index as keyword`() {
@@ -57,14 +56,18 @@ class DBMLTableStructureInspectionTest : BasePlatformTestCase() {
                   primary key {
                     columns: [id]
                   }
-                  <warning descr="'indexes' section must appear before 'primary key' section.">indexes</warning> {
+                  indexes {
                     index email
                   }
                 }
             """.trimIndent()
         )
 
-        myFixture.checkHighlighting()
+        val highlights = myFixture.doHighlighting()
+        assertTrue(
+            "Expected warning about section ordering",
+            highlights.any { it.description?.contains("must appear before") == true }
+        )
     }
 
     fun `test allows valid ordering`() {

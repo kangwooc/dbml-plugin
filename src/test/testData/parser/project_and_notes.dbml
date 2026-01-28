@@ -1,0 +1,20 @@
+Project ecommerce {
+  database_type: 'PostgreSQL'
+  Note: 'This is a sample e-commerce database'
+}
+
+table products {
+  id int [pk]
+  name varchar(255)
+}
+
+TableGroup management {
+  users
+  roles
+}
+
+Note {
+  '''
+  Multi-line note
+  '''
+}

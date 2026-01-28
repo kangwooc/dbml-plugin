@@ -2,6 +2,11 @@ package com.github.kangwooc.dbmlplugin.lang.completion
 
 import com.github.kangwooc.dbmlplugin.lang.DBMLKeywords
 import com.github.kangwooc.dbmlplugin.lang.highlighting.DBMLLexer
+import com.github.kangwooc.dbmlplugin.lang.psi.DBMLColumnAttrList
+import com.github.kangwooc.dbmlplugin.lang.psi.DBMLIndexesBlock
+import com.github.kangwooc.dbmlplugin.lang.psi.DBMLNoteBlock
+import com.github.kangwooc.dbmlplugin.lang.psi.DBMLPrimaryKeyBlock
+import com.github.kangwooc.dbmlplugin.lang.psi.DBMLTableBody
 import com.github.kangwooc.dbmlplugin.lang.psi.DBMLTokenTypes
 import com.intellij.codeInsight.completion.CompletionContributor
 import com.intellij.codeInsight.completion.CompletionParameters
@@ -13,6 +18,7 @@ import com.intellij.openapi.project.DumbAware
 import com.intellij.openapi.util.Key
 import com.intellij.psi.PsiFile
 import com.intellij.psi.TokenType
+import com.intellij.psi.util.PsiTreeUtil
 import java.util.ArrayDeque
 
 class DBMLCompletionContributor : CompletionContributor(), DumbAware {
@@ -21,6 +27,12 @@ class DBMLCompletionContributor : CompletionContributor(), DumbAware {
         val file = parameters.originalFile
         if (!file.isDbmlFile()) {
             super.fillCompletionVariants(parameters, result)
+            return
+        }
+
+        // Check for relationship type completion context first
+        if (isAfterRefKeyword(file, parameters.offset)) {
+            addRelationshipTypeCompletions(result)
             return
         }
 
@@ -59,6 +71,9 @@ class DBMLCompletionContributor : CompletionContributor(), DumbAware {
         if (text.isEmpty()) return CompletionContext.GLOBAL
 
         val clampedOffset = offset.coerceIn(0, text.length)
+        val psiContext = detectPsiContext(file, clampedOffset)
+        if (psiContext != null) return psiContext
+
         val currentStamp = file.viewProvider.document?.modificationStamp ?: file.viewProvider.modificationStamp
         val cached = file.getUserData(CONTEXT_CACHE_KEY)
         val cache = if (cached == null || cached.modificationStamp != currentStamp) {
@@ -71,6 +86,51 @@ class DBMLCompletionContributor : CompletionContributor(), DumbAware {
         }
 
         return cache.contextAt(clampedOffset)
+    }
+
+    private fun detectPsiContext(file: PsiFile, offset: Int): CompletionContext? {
+        val element = file.findElementAt(offset) ?: return null
+        if (PsiTreeUtil.getParentOfType(element, DBMLColumnAttrList::class.java) != null) {
+            return CompletionContext.BRACKET_ATTRIBUTE
+        }
+        if (PsiTreeUtil.getParentOfType(element, DBMLIndexesBlock::class.java) != null) {
+            return CompletionContext.INDEXES_BODY
+        }
+        if (PsiTreeUtil.getParentOfType(element, DBMLPrimaryKeyBlock::class.java) != null) {
+            return CompletionContext.PRIMARY_KEY_BODY
+        }
+        if (PsiTreeUtil.getParentOfType(element, DBMLNoteBlock::class.java) != null) {
+            return CompletionContext.NOTE_BODY
+        }
+        if (PsiTreeUtil.getParentOfType(element, DBMLTableBody::class.java) != null) {
+            return CompletionContext.TABLE_BODY
+        }
+        return null
+    }
+
+    private fun addRelationshipTypeCompletions(result: CompletionResultSet) {
+        RELATIONSHIP_TYPE_SUGGESTIONS.forEach { (operator, description) ->
+            result.addElement(
+                LookupElementBuilder.create(operator)
+                    .withTypeText(description, true)
+                    .withCaseSensitivity(false)
+            )
+        }
+    }
+
+    private fun isAfterRefKeyword(file: PsiFile, offset: Int): Boolean {
+        val text = file.viewProvider.document?.charsSequence ?: file.text
+        if (offset < 4) return false
+
+        var i = offset - 1
+        while (i >= 0 && text[i].isWhitespace()) {
+            i--
+        }
+
+        if (i < 3) return false
+
+        val potentialRef = text.subSequence(i - 3, i + 1).toString().lowercase()
+        return potentialRef == "ref:"
     }
 
     private fun addBracketAttributeCompletions(result: CompletionResultSet) {
@@ -362,16 +422,38 @@ class DBMLCompletionContributor : CompletionContributor(), DumbAware {
         private val COLUMN_TYPE_SUGGESTIONS = listOf(
             "int",
             "bigint",
+            "smallint",
+            "tinyint",
             "varchar",
+            "char",
             "text",
+            "mediumtext",
+            "longtext",
             "boolean",
+            "bit",
             "datetime",
             "timestamp",
+            "date",
+            "time",
+            "year",
             "uuid",
             "float",
+            "double",
             "decimal",
+            "numeric",
             "json",
-            "enum"
+            "jsonb",
+            "blob",
+            "binary",
+            "varbinary",
+            "enum",
+            "serial",
+            "bigserial",
+            "smallserial",
+            "cidr",
+            "inet",
+            "macaddr",
+            "array"
         )
 
         private val TABLE_SECTION_KEYWORDS = listOf(
@@ -428,6 +510,13 @@ class DBMLCompletionContributor : CompletionContributor(), DumbAware {
             "note: ",
             "color: ",
             "headercolor: "
+        )
+
+        private val RELATIONSHIP_TYPE_SUGGESTIONS = listOf(
+            ">" to "many-to-one",
+            "<" to "one-to-many",
+            "-" to "one-to-one",
+            "<>" to "many-to-many"
         )
 
         private val BRACED_BLOCK_INSERT_HANDLER = InsertHandler<LookupElement> { context, _ ->
