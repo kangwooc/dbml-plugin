@@ -55,18 +55,17 @@ class DBMLParserTest : ParsingTestCase("parser", "dbml", DBMLParserDefinition())
         val file = parseFile("project_and_notes", loadFile("project_and_notes.dbml"))
         ensureNoErrorElements()
 
-        val projectDecl = findFirstElement<DBMLProjectDecl>(file)
         val tablegroupDecl = findFirstElement<DBMLTableGroupDecl>(file)
-        
-        assertTrue("Expected at least project or tablegroup", projectDecl != null || tablegroupDecl != null)
+        assertNotNull("Expected TABLEGROUP_DECL element", tablegroupDecl)
     }
 
     fun `test parses note declaration`() {
         val file = parseFile("project_and_notes", loadFile("project_and_notes.dbml"))
         ensureNoErrorElements()
 
-        val projectDecl = findFirstElement<DBMLProjectDecl>(file)
-        assertNotNull("Expected PROJECT_DECL element", projectDecl)
+        val noteDecl = findFirstElement<DBMLNoteDecl>(file)
+        val noteBlock = findFirstElement<DBMLNoteBlock>(file)
+        assertTrue("Expected NOTE_DECL or NOTE_BLOCK element", noteDecl != null || noteBlock != null)
     }
 
     fun `test parses column with attributes`() {
