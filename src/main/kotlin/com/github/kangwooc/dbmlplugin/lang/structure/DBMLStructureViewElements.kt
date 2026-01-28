@@ -52,6 +52,10 @@ class DBMLFileStructureViewElement(private val file: DBMLFile) :
             children.add(DBMLRefStructureViewElement(it))
         }
 
+        PsiTreeUtil.findChildrenOfType(file, DBMLNoteDecl::class.java).forEach {
+            children.add(DBMLNoteStructureViewElement(it))
+        }
+
         return children.toTypedArray()
     }
 }
@@ -220,6 +224,29 @@ class DBMLIndexesStructureViewElement(private val indexes: DBMLIndexesBlock) :
 
     override fun getPresentation(): ItemPresentation {
         return PresentationData("indexes", null, DBMLIcons.INDEX, null)
+    }
+
+    override fun getChildren() = emptyArray<TreeElement>()
+}
+
+class DBMLNoteStructureViewElement(private val note: DBMLNoteDecl) :
+    StructureViewTreeElement, SortableTreeElement {
+
+    override fun getValue() = note
+
+    override fun navigate(requestFocus: Boolean) {
+        (note as? NavigatablePsiElement)?.navigate(requestFocus)
+    }
+
+    override fun canNavigate() = (note as? NavigatablePsiElement)?.canNavigate() ?: false
+
+    override fun canNavigateToSource() = (note as? NavigatablePsiElement)?.canNavigateToSource() ?: false
+
+    override fun getAlphaSortKey() = "Note"
+
+    override fun getPresentation(): ItemPresentation {
+        val text = note.text.replace("\n", " ").take(50)
+        return PresentationData(text, "Note", DBMLIcons.NOTE, null)
     }
 
     override fun getChildren() = emptyArray<TreeElement>()

@@ -24,7 +24,26 @@ class DBMLTableDecl(node: ASTNode) : DBMLStatement(node), DBMLNamedElement {
     }
 
     override fun setName(name: String): PsiElement {
-        return this
+        val identifierNode = findIdentifierNode() ?: return this
+        return DBMLElementFactory.replaceIdentifier(this, identifierNode, name)
+    }
+
+    override fun getNameIdentifier(): PsiElement? {
+        return findIdentifierNode()?.psi
+    }
+
+    private fun findIdentifierNode(): ASTNode? {
+        val keywords = node.getChildren(TokenSet.create(DBMLTokenTypes.KEYWORD))
+        if (keywords.isEmpty()) return null
+
+        var nextSibling: ASTNode? = keywords[0].treeNext
+        while (nextSibling != null) {
+            if (nextSibling.elementType == DBMLTokenTypes.IDENTIFIER) {
+                return nextSibling
+            }
+            nextSibling = nextSibling.treeNext
+        }
+        return null
     }
 }
 
@@ -36,7 +55,14 @@ class DBMLColumnDef(node: ASTNode) : DBMLStatement(node), DBMLNamedElement {
     }
 
     override fun setName(name: String): PsiElement {
-        return this
+        val columnName = PsiTreeUtil.findChildOfType(this, DBMLColumnName::class.java) ?: return this
+        val identifierNode = columnName.node.findChildByType(DBMLTokenTypes.IDENTIFIER) ?: return this
+        return DBMLElementFactory.replaceIdentifier(this, identifierNode, name)
+    }
+
+    override fun getNameIdentifier(): PsiElement? {
+        val columnName = PsiTreeUtil.findChildOfType(this, DBMLColumnName::class.java) ?: return null
+        return columnName.node.findChildByType(DBMLTokenTypes.IDENTIFIER)?.psi
     }
 }
 
@@ -62,7 +88,26 @@ class DBMLEnumDecl(node: ASTNode) : DBMLStatement(node), DBMLNamedElement {
     }
 
     override fun setName(name: String): PsiElement {
-        return this
+        val identifierNode = findIdentifierNode() ?: return this
+        return DBMLElementFactory.replaceIdentifier(this, identifierNode, name)
+    }
+
+    override fun getNameIdentifier(): PsiElement? {
+        return findIdentifierNode()?.psi
+    }
+
+    private fun findIdentifierNode(): ASTNode? {
+        val keywords = node.getChildren(TokenSet.create(DBMLTokenTypes.KEYWORD))
+        if (keywords.isEmpty()) return null
+
+        var nextSibling: ASTNode? = keywords[0].treeNext
+        while (nextSibling != null) {
+            if (nextSibling.elementType == DBMLTokenTypes.IDENTIFIER) {
+                return nextSibling
+            }
+            nextSibling = nextSibling.treeNext
+        }
+        return null
     }
 }
 
@@ -83,5 +128,21 @@ class DBMLIndexDef(node: ASTNode) : DBMLStatement(node)
 class DBMLPrimaryKeyBlock(node: ASTNode) : DBMLStatement(node)
 
 class DBMLUnknownStatement(node: ASTNode) : DBMLStatement(node)
+
+object DBMLElementFactory {
+    fun replaceIdentifier(element: PsiElement, identifierNode: ASTNode, newName: String): PsiElement {
+        val project = element.project
+        val dummyText = "Table $newName {}"
+        val dummyFile = com.intellij.psi.PsiFileFactory.getInstance(project)
+            .createFileFromText("dummy.dbml", com.github.kangwooc.dbmlplugin.lang.DBMLFileType, dummyText)
+
+        val newIdentifier = PsiTreeUtil.findChildOfType(dummyFile, DBMLTableDecl::class.java)
+            ?.node?.findChildByType(DBMLTokenTypes.IDENTIFIER)?.psi
+            ?: return element
+
+        identifierNode.psi.replace(newIdentifier)
+        return element
+    }
+}
 
 

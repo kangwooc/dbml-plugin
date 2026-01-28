@@ -6,16 +6,15 @@ Project ecommerce {
 table products {
   id int [pk]
   name varchar(255)
-  
-  Note {
-    '''
-    Multi-line note
-    for products table
-    '''
-  }
 }
 
 TableGroup management {
   users
   roles
+}
+
+Note {
+  '''
+  Multi-line note
+  '''
 }

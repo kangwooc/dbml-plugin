@@ -164,6 +164,17 @@ class DBMLLexerTest {
         assertEquals(DBMLTokenTypes.KEYWORD, uniqueToken!!.type)
     }
 
+    @Test
+    fun `lexes tablegroup keyword`() {
+        val text = "TableGroup management { users }"
+        
+        val tokens = lex(text).filter { it.type != TokenType.WHITE_SPACE }
+        
+        val tablegroupToken = tokens.firstOrNull { it.text.equals("TableGroup", ignoreCase = true) }
+        assertNotNull("TableGroup keyword not found", tablegroupToken)
+        assertEquals(DBMLTokenTypes.KEYWORD, tablegroupToken!!.type)
+    }
+
     private fun lex(text: String): List<Token> {
         val lexer = DBMLLexer()
         lexer.start(text, 0, text.length, 0)

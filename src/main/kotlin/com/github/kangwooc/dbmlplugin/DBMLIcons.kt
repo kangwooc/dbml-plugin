@@ -26,4 +26,7 @@ object DBMLIcons {
     
     @JvmField
     val INDEX = AllIcons.Nodes.KeymapAnt
+    
+    @JvmField
+    val NOTE = AllIcons.Toolwindows.Documentation
 }
